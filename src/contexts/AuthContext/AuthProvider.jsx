@@ -22,10 +22,10 @@ const AuthProvider = ({ children }) => {
     return createUserWithEmailAndPassword(auth, email, password);
   };
 
-  const logOut = () => {
-    setLoading(true);
-    return signOut(auth);
-  };
+  const logout = () => {
+  setLoading(true);
+  return signOut(auth);
+};
 
   const signIn = (email, password) => {
     setLoading(true);
@@ -54,7 +54,7 @@ const AuthProvider = ({ children }) => {
     loading,
     createUser,
     signIn,
-    logOut,
+    logout,
     signInWithGoogle,
   };
 
