@@ -1,13 +1,15 @@
-import { useQuery } from "@tanstack/react-query";
 import React from "react";
+import { useQuery } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
+import { useNavigate } from "react-router";
 import useAuth from "../../../hooks/useAuth";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 
 const MyParcels = () => {
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
+  const navigate = useNavigate();
 
   const {
     data: parcels = [],
@@ -17,7 +19,7 @@ const MyParcels = () => {
     queryKey: ["my-parcels", user?.email],
     queryFn: async () => {
       const res = await axiosSecure.get(`/api/parcels?email=${user?.email}`);
-      return res.data.data;
+      return res.data.data; // ✅ Important: returns array only
     },
     enabled: !!user?.email,
   });
@@ -33,31 +35,17 @@ const MyParcels = () => {
           <p><strong>Weight:</strong> ${parcel.weight || "-"} kg</p>
           <p><strong>Status:</strong> ${parcel.status}</p>
           <p><strong>Cost:</strong> ৳${parcel.cost}</p>
-          <p><strong>Created:</strong> ${parcel.creation_date_local} at ${
-        parcel.creation_time_local
-      }</p>
+          <p><strong>Created:</strong> ${parcel.creation_date_local} at ${parcel.creation_time_local}</p>
           <hr/>
-          <p><strong>Sender:</strong> ${parcel.senderName} (${
-        parcel.senderContact
-      })</p>
-          <p><strong>From:</strong> ${parcel.senderRegion}, ${
-        parcel.senderCenter
-      }</p>
+          <p><strong>Sender:</strong> ${parcel.senderName} (${parcel.senderContact})</p>
+          <p><strong>From:</strong> ${parcel.senderRegion}, ${parcel.senderCenter}</p>
           <p><strong>Address:</strong> ${parcel.senderAddress}</p>
-          <p><strong>Instruction:</strong> ${
-            parcel.senderInstruction || "N/A"
-          }</p>
+          <p><strong>Instruction:</strong> ${parcel.senderInstruction || "N/A"}</p>
           <hr/>
-          <p><strong>Receiver:</strong> ${parcel.receiverName} (${
-        parcel.receiverContact
-      })</p>
-          <p><strong>To:</strong> ${parcel.receiverRegion}, ${
-        parcel.receiverCenter
-      }</p>
+          <p><strong>Receiver:</strong> ${parcel.receiverName} (${parcel.receiverContact})</p>
+          <p><strong>To:</strong> ${parcel.receiverRegion}, ${parcel.receiverCenter}</p>
           <p><strong>Address:</strong> ${parcel.receiverAddress}</p>
-          <p><strong>Instruction:</strong> ${
-            parcel.receiverInstruction || "N/A"
-          }</p>
+          <p><strong>Instruction:</strong> ${parcel.receiverInstruction || "N/A"}</p>
         </div>
       `,
       icon: "info",
@@ -84,10 +72,14 @@ const MyParcels = () => {
     });
   };
 
+  const handlePay = (parcel) => {
+    navigate(`/dashboard/payment/${parcel._id}`);
+  };
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center mt-10">
-        <span className="loading loading-bars text-primary"></span>
+        <span className="loading loading-bars text-indigo-600"></span>
       </div>
     );
   }
@@ -114,34 +106,19 @@ const MyParcels = () => {
           </thead>
           <tbody>
             {parcels.map((parcel, index) => (
-              <tr
-                key={parcel.parcelId}
-                className="hover:bg-gray-100 transition"
-              >
+              <tr key={parcel.parcelId} className="hover:bg-indigo-50 transition">
                 <td>{index + 1}</td>
                 <td className="text-xs text-gray-600">
                   {parcel.parcelId.slice(0, 10)}...
                 </td>
                 <td>{parcel.title}</td>
                 <td>
-                  <span
-                    className={`px-2 py-1 rounded-full text-white text-xs font-semibold ${
-                      parcel.type === "document"
-                        ? "bg-blue-500"
-                        : "bg-purple-500"
-                    }`}
-                  >
+                  <span className={`px-2 py-1 rounded-full text-white text-xs font-semibold ${parcel.type === "document" ? "bg-blue-500" : "bg-purple-500"}`}>
                     {parcel.type}
                   </span>
                 </td>
                 <td>
-                  <span
-                    className={`px-2 py-1 rounded-full text-white text-xs font-semibold ${
-                      parcel.status === "Pending"
-                        ? "bg-yellow-500"
-                        : "bg-green-600"
-                    }`}
-                  >
+                  <span className={`px-2 py-1 rounded-full text-white text-xs font-semibold ${parcel.status === "Pending" ? "bg-yellow-500" : "bg-green-600"}`}>
                     {parcel.status}
                   </span>
                 </td>
@@ -149,26 +126,38 @@ const MyParcels = () => {
                 <td className="text-xs text-gray-500 leading-tight">
                   {parcel.creation_date_local}
                   <br />
-                  <span className="text-[11px]">
-                    {parcel.creation_time_local}
-                  </span>
+                  <span className="text-[11px]">{parcel.creation_time_local}</span>
                 </td>
-                <td className="flex gap-1 justify-center">
+                <td className="flex flex-wrap gap-1 justify-center">
                   <button
                     onClick={() => handleView(parcel)}
                     className="btn btn-xs bg-blue-600 hover:bg-blue-700 text-white"
+                    title="View"
                   >
                     <FaEye size={12} />
                   </button>
-                  <button className="btn btn-xs bg-yellow-500 hover:bg-yellow-600 text-white">
+                  <button
+                    className="btn btn-xs bg-yellow-500 hover:bg-yellow-600 text-white"
+                    title="Edit"
+                  >
                     <FaEdit size={12} />
                   </button>
                   <button
                     onClick={() => handleDelete(parcel._id)}
                     className="btn btn-xs bg-red-600 hover:bg-red-700 text-white"
+                    title="Delete"
                   >
                     <FaTrash size={12} />
                   </button>
+                  {!parcel.isPaid && (
+                    <button
+                      onClick={() => handlePay(parcel)}
+                      className="btn btn-xs bg-emerald-500 hover:bg-emerald-600 text-white"
+                      title="Pay Now"
+                    >
+                      Pay Now
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}
