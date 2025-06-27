@@ -3,11 +3,13 @@ import React, { useState } from "react";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router";
 
 const PaymentForm = ({ parcel }) => {
   const stripe = useStripe();
   const elements = useElements();
   const axiosSecure = useAxiosSecure();
+  const navigate = useNavigate(); // ✅ for redirection
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -16,11 +18,10 @@ const PaymentForm = ({ parcel }) => {
     e.preventDefault();
 
     if (!stripe || !elements) return;
-
     setLoading(true);
 
     try {
-      // 1. Create payment intent from backend
+      // Step 1: Create payment intent
       const res = await axiosSecure.post("/create-payment-intent", {
         amount: parseInt(parcel.cost),
         parcel: parcel._id,
@@ -28,12 +29,12 @@ const PaymentForm = ({ parcel }) => {
 
       const clientSecret = res.data.clientSecret;
 
-      // 2. Confirm card payment
+      // Step 2: Confirm card payment
       const result = await stripe.confirmCardPayment(clientSecret, {
         payment_method: {
           card: elements.getElement(CardElement),
           billing_details: {
-            name: "Vladimir Putin", // optional: dynamic user name
+            name: "Vladimir Putin", // Replace with user name if needed
           },
         },
       });
@@ -46,16 +47,27 @@ const PaymentForm = ({ parcel }) => {
         console.log("✅ Payment successful:", result.paymentIntent);
         setError("");
 
-        // Optional: Update isPaid = true in database
+        // Step 3: Update parcel status
+        await axiosSecure.patch(`/parcels/${parcel._id}/mark-paid`);
 
-        // Show SweetAlert
+        // Step 4: Save payment history
+        await axiosSecure.post("/payments", {
+          userEmail: parcel.userEmail,
+          parcelId: parcel._id,
+          amount: parcel.cost,
+          transactionId: result.paymentIntent.id,
+          date: new Date(),
+        });
+
+        // Step 5: Show SweetAlert then navigate
         Swal.fire({
           title: "🎉 Payment Successful!",
           text: `৳${parcel.cost} has been paid for this parcel.`,
           icon: "success",
           confirmButtonText: "OK",
           confirmButtonColor: "#6366F1",
-          background: "#fff",
+        }).then(() => {
+          navigate("/dashboard/myParcels"); // ✅ back to parcel list to refetch
         });
       }
 
