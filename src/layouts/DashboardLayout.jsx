@@ -1,7 +1,13 @@
 import React from "react";
 import { NavLink, Outlet } from "react-router";
 import ProFastLogo from "../pages/Shared/ProFastLogo/ProFastLogo";
-import { FaHistory, FaMapMarkerAlt, FaEdit } from "react-icons/fa";
+import {
+  FaHistory,
+  FaMapMarkerAlt,
+  FaEdit,
+  FaMotorcycle,
+  FaClock,
+} from "react-icons/fa";
 
 const DashboardLayout = () => {
   return (
@@ -47,7 +53,7 @@ const DashboardLayout = () => {
           {/* Sidebar content here */}
           <ProFastLogo />
           <li>
-            <a>Home</a>
+            <NavLink to="/">🏠Home</NavLink>
           </li>
           <li>
             <NavLink to="/dashboard/myParcels">📦My Parcels</NavLink>
@@ -69,6 +75,24 @@ const DashboardLayout = () => {
             >
               <FaEdit />
               Update Profile
+            </NavLink>
+          </li>
+          {/* riders link */}
+          <li>
+            <NavLink
+              to="/dashboard/activeRiders"
+              className="flex items-center gap-2"
+            >
+              <FaMotorcycle />
+              Active Riders
+            </NavLink>
+
+            <NavLink
+              to="/dashboard/pendingRiders"
+              className="flex items-center gap-2"
+            >
+              <FaClock />
+              Pending Riders
             </NavLink>
           </li>
         </ul>

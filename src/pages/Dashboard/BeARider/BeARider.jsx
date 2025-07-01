@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import useAuth from '../../../hooks/useAuth';
-import warehouseData from '../../../../public/Warehouse.json'; // Adjust path if needed
+import warehouseData from '../../../../public/Warehouse.json'; // Adjust if needed
 import Swal from 'sweetalert2';
+import useAxiosSecure from '../../../hooks/useAxiosSecure';
 
 const BeARider = () => {
   const { user } = useAuth();
+  const axiosSecure = useAxiosSecure();
+
   const [regions, setRegions] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [selectedRegion, setSelectedRegion] = useState('');
@@ -21,13 +24,13 @@ const BeARider = () => {
     status: 'pending'
   });
 
-  // Extract regions
+  // Extract unique regions from warehouse data
   useEffect(() => {
     const uniqueRegions = [...new Set(warehouseData.map(item => item.region))];
     setRegions(uniqueRegions);
   }, []);
 
-  // Update districts based on region
+  // Update district options when region changes
   useEffect(() => {
     if (selectedRegion) {
       const filteredDistricts = warehouseData
@@ -50,7 +53,7 @@ const BeARider = () => {
       setSelectedRegion(value);
       setFormData(prev => ({
         ...prev,
-        district: '' // Reset district
+        district: '' // reset district if region changes
       }));
     }
   };
@@ -58,25 +61,17 @@ const BeARider = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:5000/riders', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      });
+      const res = await axiosSecure.post('/riders', formData);
 
-      const result = await res.json();
-
-      if (result.insertedId) {
-        Swal.fire('Success', 'Your application has been submitted.', 'success');
-        // Reset form if needed
+      if (res.data?.insertedId) {
+        Swal.fire('✅ Success', 'Your rider application has been submitted.', 'success');
+        // Optional: reset form
       } else {
-        Swal.fire('Error', 'Submission failed.', 'error');
+        Swal.fire('❌ Error', 'Submission failed.', 'error');
       }
-    } catch (err) {
-      console.error(err);
-      Swal.fire('Error', 'Something went wrong!', 'error');
+    } catch (error) {
+      console.error('❌ Rider application error:', error);
+      Swal.fire('❌ Error', error?.response?.data?.message || 'Something went wrong!', 'error');
     }
   };
 
@@ -89,7 +84,7 @@ const BeARider = () => {
         <input type="email" name="email" value={formData.email} readOnly className="input input-bordered w-full" />
 
         <input type="number" name="age" placeholder="Age" value={formData.age} onChange={handleChange} className="input input-bordered w-full" required />
-        
+
         <select name="region" value={formData.region} onChange={handleChange} className="select select-bordered w-full" required>
           <option value="">Select Region</option>
           {regions.map(region => (
