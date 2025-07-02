@@ -20,8 +20,8 @@ const PendingRiders = () => {
 
   // Mutation for updating rider status
   const mutation = useMutation({
-    mutationFn: async ({ id, status }) => {
-      return axiosSecure.patch(`/riders/${id}`, { status });
+    mutationFn: async ({ id, status ,email}) => {
+      return axiosSecure.patch(`/riders/${id}`, { status,email });
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries(["pendingRiders"]);
@@ -33,8 +33,8 @@ const PendingRiders = () => {
     },
   });
 
-  const handleStatusUpdate = (id, status) => {
-    mutation.mutate({ id, status },
+  const handleStatusUpdate = (id, status, email) => {
+    mutation.mutate({ id, status,email },
         {
     onSuccess: () => {
       refetch(); // ✅ manually refetch after status update
@@ -83,13 +83,13 @@ const PendingRiders = () => {
                     </button>
                     <button
                       className="btn btn-xs btn-success"
-                      onClick={() => handleStatusUpdate(rider._id, "approved")}
+                      onClick={() => handleStatusUpdate(rider._id, "approved",rider.email)}
                     >
                       Accept
                     </button>
                     <button
                       className="btn btn-xs btn-error"
-                      onClick={() => handleStatusUpdate(rider._id, "rejected")}
+                      onClick={() => handleStatusUpdate(rider._id, "rejected", rider.email)}
                     >
                       Reject
                     </button>
