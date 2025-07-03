@@ -7,7 +7,7 @@ const useUserRole = () => {
   const axiosSecure = useAxiosSecure();
 
   const {
-    data: roleData,
+    data: role,
     isLoading: roleLoading,
     error,
   } = useQuery({
@@ -15,11 +15,11 @@ const useUserRole = () => {
     queryKey: ["userRole", user?.email],
     queryFn: async () => {
       const res = await axiosSecure.get(`/users/role?email=${user.email}`);
-      return res.data?.role || "user"; // fallback role
+      return res.data?.role || "user"; // default fallback
     },
   });
 
-  return [roleData, roleLoading, error];
+  return { role, roleLoading, error };
 };
 
 export default useUserRole;

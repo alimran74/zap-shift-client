@@ -12,15 +12,31 @@ import {
 import useUserRole from "../hooks/useUserRole";
 
 const DashboardLayout = () => {
-  const [role, loading, error] = useUserRole();
-   console.log("Role:", role);
+  const { role, roleLoading: loading, error } = useUserRole();
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <span className="loading loading-infinity loading-lg"></span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-red-500 text-center mt-10">
+        Failed to load user role.
+      </div>
+    );
+  }
+
   return (
     <div className="drawer lg:drawer-open">
       <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
       <div className="drawer-content flex flex-col ">
         {/* navbar */}
         <div className="navbar bg-base-300 w-full lg:hidden">
-          <div className="flex-none ">
+          <div className="flex-none">
             <label
               htmlFor="my-drawer-2"
               aria-label="open sidebar"
@@ -43,10 +59,11 @@ const DashboardLayout = () => {
           </div>
           <div className="mx-2 flex-1 px-2 lg:hidden">Dashboard</div>
         </div>
+
         {/* Page content here */}
         <Outlet />
-        {/* Page content here */}
       </div>
+
       <div className="drawer-side">
         <label
           htmlFor="my-drawer-2"
@@ -56,15 +73,14 @@ const DashboardLayout = () => {
         <ul className="menu bg-base-200 text-base-content min-h-full w-80 p-4">
           {/* Sidebar content here */}
           <ProFastLogo />
+
           <li>
             <NavLink to="/">🏠Home</NavLink>
           </li>
+
           <li>
-            <NavLink to="/dashboard/myParcels">📦My Parcels</NavLink>
-            <NavLink
-              to="/dashboard/paymentHistory"
-              className="flex items-center gap-1"
-            >
+            <NavLink to="/dashboard/myParcels">📦 My Parcels</NavLink>
+            <NavLink to="/dashboard/paymentHistory" className="flex items-center gap-1">
               <FaHistory />
               Payment History
             </NavLink>
@@ -72,43 +88,35 @@ const DashboardLayout = () => {
               <FaMapMarkerAlt />
               Track a Package
             </NavLink>
-
-            <NavLink
-              to="/dashboard/profile"
-              className="flex items-center gap-2"
-            >
+            <NavLink to="/dashboard/profile" className="flex items-center gap-2">
               <FaEdit />
               Update Profile
             </NavLink>
           </li>
-          {/* riders link */}
-          <li>
-            { !loading && role === 'admin' &&
-              <>
-              <NavLink
-              to="/dashboard/activeRiders"
-              className="flex items-center gap-2"
-            >
-              <FaMotorcycle />
-              Active Riders
-            </NavLink>
 
-            <NavLink
-              to="/dashboard/pendingRiders"
-              className="flex items-center gap-2"
-            >
-              <FaClock />
-              Pending Riders
-            </NavLink>
-            <NavLink
-              to="/dashboard/makeAdmin"
-              className="flex items-center gap-2"
-            >
-              <FaUserShield /> Make Admin
-            </NavLink>
-              </>
-            }
-          </li>
+          {/* Admin-only links */}
+          {role === "admin" && (
+            <>
+              <li>
+                <NavLink to="/dashboard/activeRiders" className="flex items-center gap-2">
+                  <FaMotorcycle />
+                  Active Riders
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/dashboard/pendingRiders" className="flex items-center gap-2">
+                  <FaClock />
+                  Pending Riders
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/dashboard/makeAdmin" className="flex items-center gap-2">
+                  <FaUserShield />
+                  Make Admin
+                </NavLink>
+              </li>
+            </>
+          )}
         </ul>
       </div>
     </div>
