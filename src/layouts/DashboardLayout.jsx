@@ -7,6 +7,7 @@ import {
   FaEdit,
   FaMotorcycle,
   FaClock,
+  FaUserShield,
 } from "react-icons/fa";
 
 const DashboardLayout = () => {
@@ -93,6 +94,12 @@ const DashboardLayout = () => {
             >
               <FaClock />
               Pending Riders
+            </NavLink>
+            <NavLink
+              to="/dashboard/makeAdmin"
+              className="flex items-center gap-2"
+            >
+              <FaUserShield /> Make Admin
             </NavLink>
           </li>
         </ul>
