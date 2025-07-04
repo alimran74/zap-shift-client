@@ -62,10 +62,11 @@ const AssignRider = () => {
 
       {selectedParcel && (
         <AssignRiderModal
-          isOpen={modalOpen}
-          onRequestClose={() => setModalOpen(false)}
-          parcel={selectedParcel}
-        />
+  isOpen={modalOpen}
+  onRequestClose={() => setModalOpen(false)}
+  parcel={selectedParcel}
+/>
+
       )}
     </div>
   );

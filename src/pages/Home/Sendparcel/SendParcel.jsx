@@ -5,6 +5,7 @@ import useAuth from "../../../hooks/useAuth";
 import Swal from "sweetalert2";
 import { v4 as uuidv4 } from "uuid"; // ✅ for parcelId
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import { useNavigate } from "react-router";
 
 const SendParcel = () => {
   const { user } = useAuth();
@@ -17,6 +18,7 @@ const SendParcel = () => {
   } = useForm();
 
   const axiosSecure = useAxiosSecure();
+  const navigate = useNavigate();
 
   const [warehouseData, setWarehouseData] = useState([]);
   const [districts, setDistricts] = useState([]);
@@ -125,7 +127,8 @@ const SendParcel = () => {
           console.log(res.data);
           if(res.data.insertedId){
             Swal.fire("✅ Success", `Parcel submitted! 🚚<br/>Tracking ID: <b>${parcelData.parcelId}</b>`, "success");
-          }
+          };
+          navigate('/dashboard/myParcels')
         })
 
         
