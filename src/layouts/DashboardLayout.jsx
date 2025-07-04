@@ -8,6 +8,7 @@ import {
   FaMotorcycle,
   FaClock,
   FaUserShield,
+  FaTruckLoading,
 } from "react-icons/fa";
 import useUserRole from "../hooks/useUserRole";
 
@@ -80,7 +81,10 @@ const DashboardLayout = () => {
 
           <li>
             <NavLink to="/dashboard/myParcels">📦 My Parcels</NavLink>
-            <NavLink to="/dashboard/paymentHistory" className="flex items-center gap-1">
+            <NavLink
+              to="/dashboard/paymentHistory"
+              className="flex items-center gap-1"
+            >
               <FaHistory />
               Payment History
             </NavLink>
@@ -88,7 +92,10 @@ const DashboardLayout = () => {
               <FaMapMarkerAlt />
               Track a Package
             </NavLink>
-            <NavLink to="/dashboard/profile" className="flex items-center gap-2">
+            <NavLink
+              to="/dashboard/profile"
+              className="flex items-center gap-2"
+            >
               <FaEdit />
               Update Profile
             </NavLink>
@@ -98,19 +105,38 @@ const DashboardLayout = () => {
           {role === "admin" && (
             <>
               <li>
-                <NavLink to="/dashboard/activeRiders" className="flex items-center gap-2">
+                <NavLink
+                  to="/dashboard/activeRiders"
+                  className="flex items-center gap-2"
+                >
                   <FaMotorcycle />
                   Active Riders
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/dashboard/pendingRiders" className="flex items-center gap-2">
+                <NavLink
+                  to="/dashboard/pendingRiders"
+                  className="flex items-center gap-2"
+                >
                   <FaClock />
                   Pending Riders
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/dashboard/makeAdmin" className="flex items-center gap-2">
+                <NavLink
+                  to="/dashboard/assignRider"
+                  className="flex items-center gap-2"
+                >
+                  <FaTruckLoading />
+                  Assign Rider
+                </NavLink>
+              </li>
+
+              <li>
+                <NavLink
+                  to="/dashboard/makeAdmin"
+                  className="flex items-center gap-2"
+                >
                   <FaUserShield />
                   Make Admin
                 </NavLink>
