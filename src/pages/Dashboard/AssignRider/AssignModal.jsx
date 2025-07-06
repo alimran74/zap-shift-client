@@ -40,6 +40,7 @@ const AssignModal = ({ isOpen, onRequestClose, parcel }) => {
           _id: rider._id,
           name: rider.name,
           phone: rider.phone,
+          email: rider.email,
           region: rider.region,
           district: rider.district,
         },
