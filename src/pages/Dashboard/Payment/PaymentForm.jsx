@@ -23,11 +23,16 @@ const PaymentForm = ({ parcel }) => {
     try {
       // Step 1: Create payment intent
       const res = await axiosSecure.post("/create-payment-intent", {
-        amount: parseInt(parcel.cost),
-        parcel: parcel._id,
-      });
+  amount: parseInt(parcel.cost),
+  parcel: parcel._id,
+});
 
-      const clientSecret = res.data.clientSecret;
+if (!res?.data?.clientSecret) {
+  throw new Error("Client secret not returned from server");
+}
+
+const clientSecret = res.data.clientSecret;
+
 
       // Step 2: Confirm card payment
       const result = await stripe.confirmCardPayment(clientSecret, {
